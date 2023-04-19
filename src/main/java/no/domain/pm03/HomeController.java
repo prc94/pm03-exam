@@ -1,56 +1,35 @@
 package no.domain.pm03;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 @RequestMapping("/")
 public class HomeController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @PostConstruct
-    public void onInit() {
-        String username = "user";
-        String password = "123qweQWE";
-        var user = new Account(username, passwordEncoder.encode(password));
-        userRepository.save(user);
-    }
-
     @GetMapping("/")
-    public RedirectView root() {
-        return new RedirectView("/index.html");
+    public String root() {
+        return "redirect:/submit";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestBody Account user) {
-        Account existingUser = userRepository.findByUsername(user.getUsername());
-        if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return "Welcome " + authentication.getName();
+    @GetMapping("/get_user")
+    @ResponseBody
+    public String getUser(@CurrentSecurityContext(expression="authentication")
+                              Authentication authentication) {
+        return authentication.getName();
     }
 
     @GetMapping("/submit")
-    public String submit(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        Account user = userRepository.findByUsername(userDetails.getUsername());
-        model.addAttribute("user", user);
-        return "submit";
+    public ModelAndView submit(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        model.addAttribute("user", userDetails.getUsername());
+        return new ModelAndView("forward:/submit.html", model.asMap());
     }
 }

@@ -13,8 +13,19 @@
 </form>
 <div id="result"></div>
 <script src="app.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  document.getElementById("username").innerHTML = localStorage.getItem("user");
+  $.ajax({
+    url: "/get_user",
+    type: "GET",
+    success: function(data) {
+      // Do something with the user data
+      document.getElementById("username").innerHTML = data;
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log("Error retrieving user data: " + textStatus);
+    }
+  });
 </script>
 </body>
 </html>

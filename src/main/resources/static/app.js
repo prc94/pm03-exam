@@ -21,18 +21,19 @@ function login() {
 }
 
 function submitData() {
-    var username = document.getElementById("username").value;
-    var data = document.getElementById("data").value;
+    const data = document.getElementById("data").value;
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/submit?username=" + username, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            document.getElementById("result").innerHTML = "Data submitted successfully";
-        } else {
-            document.getElementById("result").innerHTML = "Error submitting data";
+    $.ajax({
+        url: "/api/submit",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ "data" : "asasas" }),
+        success: function(response) {
+            $("#result").html("Data submitted successfully");
+        },
+        error: function(xhr, status, error) {
+            $("#result").html("Error submitting data");
+            console.log("Submit error. " + error);
         }
-    };
-    xhr.send(JSON.stringify({ "data": data }));
+    });
 }
