@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Submission Page</title>
+</head>
+<body>
+<h1>Data Submission Page</h1>
+<p>Logged in as: <span id="username"></span></p>
+<form>
+  <label for="data">Data:</label>
+  <input type="text" id="data" name="data"><br><br>
+  <button type="button" onclick="submitData()">Submit</button>
+</form>
+<div id="result"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById("username").innerHTML = localStorage.getItem("user");
+</script>
+</body>
+</html>
