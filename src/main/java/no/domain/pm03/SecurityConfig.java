@@ -27,7 +27,12 @@ public class SecurityConfig {
                 .roles("USER", "ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user, admin);
+        UserDetails tmgr = User.withUsername("tourmgr")
+                .password(passwordEncoder.encode("tourism"))
+                .roles("USER", "ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin, tmgr);
     }
 
     @Bean

@@ -15,11 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class HomeController {
 
-    @GetMapping("/")
-    public String root() {
-        return "redirect:/submit";
-    }
-
     @GetMapping("/get_user")
     @ResponseBody
     public String getUser(@CurrentSecurityContext(expression="authentication")
@@ -27,9 +22,8 @@ public class HomeController {
         return authentication.getName();
     }
 
-    @GetMapping("/submit")
+    @GetMapping("/")
     public ModelAndView submit(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        model.addAttribute("user", userDetails.getUsername());
-        return new ModelAndView("forward:/submit.html", model.asMap());
+        return new ModelAndView("forward:/index.html");
     }
 }

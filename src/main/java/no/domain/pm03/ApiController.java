@@ -1,27 +1,27 @@
 package no.domain.pm03;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
 
-    private Map<String, String> dataMap = new HashMap<>();
+    private Map<String, List<TourData>> dataMap = new HashMap<>();
 
     @PostMapping(value = "/submit", consumes = "application/json")
-    public void submitData(@RequestBody UserData userData,
+    public void submitData(@RequestBody TourData tourData,
                            @CurrentSecurityContext(expression = "authentication") Authentication authentication) {
-        dataMap.put(authentication.getName(), userData.getData());
+        dataMap.computeIfAbsent(authentication.getName(), (e) -> new LinkedList<>()).add(tourData);
     }
 
-    @GetMapping("/userdata")
-    public String getUserData(@CurrentSecurityContext(expression = "authentication") Authentication authentication) {
-        return dataMap.get(authentication.getName());
+    @GetMapping(value = "/userdata", produces = "application/json")
+    public ResponseEntity<List<TourData>> getUserData(@CurrentSecurityContext(expression = "authentication") Authentication authentication) {
+        return ResponseEntity.of(Optional.ofNullable(dataMap.get(authentication.getName())));
     }
 
 }
